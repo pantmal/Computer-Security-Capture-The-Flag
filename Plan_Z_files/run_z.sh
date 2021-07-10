@@ -8,4 +8,4 @@ echo -en $(python3 request_z.py | sed -n 2p) \
     -X POST -i \
     -H 'Authorization: Basic YWRtaW46Ym9iJ3MgeW91ciB1bmNsZQ==' \
     --data-binary @- \
-    -H 'Content-Length: 0'
+    -H 'Content-Length: 0' --http0.9

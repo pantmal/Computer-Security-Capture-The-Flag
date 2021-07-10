@@ -75,6 +75,7 @@ void route() {
     }
   }
 
+//Our new endpoint. To get the system address, open up http://127.0.0.1:8000, authorize yourself, and then add '/system' at the URL
   ROUTE_GET("/system") {
     printf("HTTP/1.1 200 OK\r\n\r\n");
     printf("%p\n", &system);

